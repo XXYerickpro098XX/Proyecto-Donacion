@@ -31,15 +31,15 @@ namespace Proyecto_Donacion.Models
 
         public int CrearUsuario()
         {
-            string connString = ConfigurationManager.ConnectionStrings["TiendaDB"].ConnectionString;
+            string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 SqlCommand cmd = new SqlCommand("INSERTAR_USUARIO", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@NOMBRE", this.Nombre1);
-                cmd.Parameters.AddWithValue("@CORREO", this.Correo1);
-                cmd.Parameters.AddWithValue("@TELEFONO", this.Telefono1);
+                cmd.Parameters.AddWithValue("@Nombre", this.Nombre1);
+                cmd.Parameters.AddWithValue("@Correo", this.Correo1);
+                cmd.Parameters.AddWithValue("@Telefono", this.Telefono1);
                 cmd.Parameters.AddWithValue("@Password", SeguridadUtil.HashSHA256(this.PasswordHash1));
                 cmd.Parameters.AddWithValue("@Rol", this.Rol1);
 
@@ -54,7 +54,7 @@ namespace Proyecto_Donacion.Models
         public static List<Usuario> ObtenerTodos()
         {
             List<Usuario> lista = new List<Usuario>();
-            string connString = ConfigurationManager.ConnectionStrings["TiendaDB"].ConnectionString;
+            string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 SqlCommand cmd = new SqlCommand("SELECCIONAR_USUARIO", conn);
@@ -72,13 +72,13 @@ namespace Proyecto_Donacion.Models
                     us.UsuarioID = (int)reader["UsuarioID"];
                     lista.Add(us);
                 }
-            }
+            } 
             return lista;
         }
 
         public bool EliminarUsuario(int id)
         {
-            string connString = ConfigurationManager.ConnectionStrings["TiendaDB"].ConnectionString;
+            string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 SqlCommand cmd = new SqlCommand("ELIMINAR_USUARIO", conn);
@@ -93,12 +93,13 @@ namespace Proyecto_Donacion.Models
 
         public bool ActualizarUsuario()
         {
-            string connString = ConfigurationManager.ConnectionStrings["TiendaDB"].ConnectionString;
+            string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 SqlCommand cmd = new SqlCommand("ActualizarUsuario", conn);
                 cmd.Parameters.AddWithValue("@Nombre", this.Nombre);
                 cmd.Parameters.AddWithValue("@Correo", this.Correo);
+                cmd.Parameters.AddWithValue("@Telefono", this.Telefono);
                 cmd.Parameters.AddWithValue("@PasswordHash", this.PasswordHash);
                 cmd.Parameters.AddWithValue("@Rol", this.Rol);
                 conn.Open();

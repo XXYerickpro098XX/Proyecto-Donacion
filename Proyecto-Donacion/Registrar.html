@@ -84,11 +84,11 @@
                 const password = $('#password').val();
 
                 const nuevoUsuario = {
-                    NOMBRE: nombre,
-                    CORREO: email,
-                    TELEFONO: telefono,
-                    Password: password,
-                    Rol: false  // Usuario normal
+                    Nombre1: nombre,
+                    Correo1: email,
+                    Telefono1: telefono,
+                    PasswordHash1: password,
+                    Rol1: false  // Usuario normal
                 };
 
                 apiUsuarios.registrar(nuevoUsuario)
