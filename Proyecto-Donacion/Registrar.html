@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Usuario</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #343a40;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #007bff;
+        }
+
+        .btn-primary {
+            border-radius: 2rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .btn-link {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card p-4 w-100" style="max-width: 500px;">
+            <h2 class="card-title text-center">Registro de nuevo usuario</h2>
+            <form id="formRegistro">
+                <div class="form-group">
+                    <label for="nombre"><i class="fas fa-user"></i> Nombre completo</label>
+                    <input type="text" class="form-control" id="nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Correo electrónico</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono"><i class="fas fa-phone"></i> Teléfono</label>
+                    <input type="text" class="form-control" id="telefono">
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Registrarse</button>
+                <div class="text-center mt-3">
+                    <a href="login.html" class="btn btn-link">Ya tengo cuenta, iniciar sesión</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/apiClient.js"></script>
+    <script>
+        const apiUsuarios = new UsuarioAPI();
+
+        $(function () {
+            $('#formRegistro').on('submit', function (e) {
+                e.preventDefault();
+
+                const nombre = $('#nombre').val();
+                const email = $('#email').val();
+                const telefono = $('#telefono').val();
+                const password = $('#password').val();
+
+                const nuevoUsuario = {
+                    NOMBRE: nombre,
+                    CORREO: email,
+                    TELEFONO: telefono,
+                    Password: password,
+                    Rol: false  // Usuario normal
+                };
+
+                apiUsuarios.registrar(nuevoUsuario)
+                    .then(user => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Registro exitoso!',
+                            text: 'Usuario registrado correctamente. Ahora puedes iniciar sesión.'
+                        }).then(() => {
+                            window.location.href = 'login.html';
+                        });
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error al registrarse',
+                            text: 'No se pudo completar el registro. ' + err
+                        });
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
