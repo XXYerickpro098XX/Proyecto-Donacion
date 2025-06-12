@@ -96,7 +96,7 @@ namespace Proyecto_Donacion.Models
             string conString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(conString))
             {
-                SqlCommand cmd = new SqlCommand("OBTENER_USUARIO_POR_Correo", conn);
+                SqlCommand cmd = new SqlCommand("OBTENER_USUARIO_POR_CORREO", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@Correo", Correo);
 

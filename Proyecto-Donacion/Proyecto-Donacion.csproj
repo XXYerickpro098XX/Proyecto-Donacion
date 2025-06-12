@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="donacion.html" />
     <Content Include="Global.asax" />
     <Content Include="Index.html" />
     <Content Include="js\ApiClient.js" />
@@ -90,10 +91,13 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\DonacionController.cs" />
     <Compile Include="Controllers\UsuarioController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Beneficiario.cs" />
+    <Compile Include="Models\Donacion.cs" />
     <Compile Include="Models\SeguridadUtil.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -53,19 +53,18 @@ class BeneficiarioAPI extends ApiClient {
     constructor() {
         super("api/Beneficiarios/");
     }
-    obtenerTodas() {
+    obtenerTodos() {
         return this.request('GET');
     }
-    modificar(id, BeneficiariosObj) {
-        return this.request('PUT', id.toString(), BeneficiariosObj);
-    }
     obtenerPorId(id) {
-        return this.request('GET', id.toString())
+        return this.request('GET', id.toString());
     }
-    crear(BeneficiariosObj) {
-        return this.request('POST', "", BeneficiariosObj);
+    crear(beneficiarioObj) {
+        return this.request('POST', "", beneficiarioObj);
     }
-    // ... similares a ProductoAPI
+    actualizar(id, beneficiarioObj) {
+        return this.request('PUT', id.toString(), beneficiarioObj);
+    }
     eliminar(id) {
         return this.request('DELETE', id.toString());
     }
