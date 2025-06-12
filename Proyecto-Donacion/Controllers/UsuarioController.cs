@@ -33,6 +33,7 @@ namespace Proyecto_Donacion.Controllers
                 us.Nombre1 = nuevo.Nombre1;
                 us.Correo1 = nuevo.Correo1;
                 us.PasswordHash1 = nuevo.PasswordHash1;
+                us.Telefono1 = nuevo.Telefono1;
                 us.Rol1 = nuevo.Rol1;
                 int newId = us.CrearUsuario();
 
@@ -59,6 +60,7 @@ namespace Proyecto_Donacion.Controllers
             us.Nombre1 = editado.Nombre1;
             us.Correo1 = editado.Correo1;
             us.PasswordHash1 = editado.PasswordHash1;
+            us.Telefono1 = editado.Telefono1;
             us.Rol1 = editado.Rol1;
 
             int newId = us.CrearUsuario();   // igual que tu ejemplo, aunque no sea correcto

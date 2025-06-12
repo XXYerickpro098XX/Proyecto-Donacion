@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .navbar {
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+
+        .container h1 {
+            font-weight: 700;
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">TiendaOnline</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="donacion.html">Donacion</a></li>
+                <li class="nav-item"><a class="nav-link" href="beneficiarios.html">Beneficiarios</a></li>
+                <!-- Link oculto por defecto -->
+                <li class="nav-item"><a class="nav-link" href="fondos.html" id="linkFondos" style="display:none;">Fondos</a></li>
+            </ul>
+            <button id="btnLogout" class="btn btn-outline-light">Cerrar Sesión</button>
+        </div>
+    </nav>
+    <div class="container mt-4">
+        <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
+        <p class="lead">Has iniciado sesión correctamente. Utiliza el menú para navegar entre las secciones.</p>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/apiClient.js"></script>
+    <script>
+        $(function () {
+            const encryptedUser = localStorage.getItem('userData');
+            if (!encryptedUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const nombre = localStorage.getItem('userName');
+            const rolString = localStorage.getItem('userRol'); // debe ser 'true' o 'false' (string)
+            const rol = rolString === 'true';
+
+            console.log('Rol desde localStorage:', rolString);
+            console.log('Rol booleano:', rol);
+
+            $('#nombreUsuario').text(nombre ? nombre : 'Usuario');
+
+            if (rol) {
+                $('#linkFondos').show();
+            } else {
+                $('#linkFondos').hide();
+            }
+
+            $('#btnLogout').on('click', function () {
+                localStorage.removeItem('userData');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userRol');
+                window.location.href = 'login.html';
+            });
+        });
+    </script>
+</body>
+</html>

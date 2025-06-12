@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            color: #343a40;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #007bff;
+        }
+
+        .btn-primary {
+            border-radius: 2rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .btn-link {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card p-4 w-100" style="max-width: 500px;">
+            <h2 class="card-title text-center">Inicio de Sesión</h2>
+            <form id="formLogin">
+                <div class="form-group">
+                    <label for="correo"><i class="fas fa-envelope"></i> Correo electrónico</label>
+                    <input type="email" class="form-control" id="correo" required>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+                <div class="text-center mt-3">
+                    <a href="registrar.html" class="btn btn-link">Crear una cuenta</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/apiClient.js"></script>
+    <script>
+        const apiAuth = new AuthAPI();
+        $(function () {
+            $('#formLogin').on('submit', function (e) {
+                e.preventDefault();
+                const correo = $('#correo').val();
+                const pass = $('#password').val();
+                apiAuth.login(correo, pass)
+                    .then(user => {
+                        // Guarda el objeto original (opcional, por si lo necesitas)
+                        localStorage.setItem('userData', JSON.stringify(user));
+                        localStorage.setItem('userName', user.Nombre);
+                        localStorage.setItem('userRol', user.Rol.toString());
+
+                        window.location.href = 'index.html';
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Credenciales incorrectas',
+                            text: 'correo o contraseña inválidos. Intenta de nuevo.'
+                        });
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

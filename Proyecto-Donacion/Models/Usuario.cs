@@ -90,7 +90,32 @@ namespace Proyecto_Donacion.Models
                 return rows > 0;
             }
         }
+        public static Usuario ObtenerPorCorreo(string Correo)
+        {
+            Usuario us = new Usuario();
+            string conString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(conString))
+            {
+                SqlCommand cmd = new SqlCommand("OBTENER_USUARIO_POR_Correo", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Correo", Correo);
 
+                conn.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    us.Correo = reader["Correo"].ToString();
+                    us.Nombre = reader["Nombre"].ToString();
+                    us.Rol = (bool)reader["Rol"];
+                    us.UsuarioID = (int)reader["UsuarioID"];
+                    us.PasswordHash1 = reader["PasswordHash"].ToString();
+                }
+
+                reader.Close();
+            }
+
+            return us;
+        }
         public bool ActualizarUsuario()
         {
             string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;

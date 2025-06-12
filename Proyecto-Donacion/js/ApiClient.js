@@ -85,8 +85,9 @@ class AuthAPI extends ApiClient {
     constructor() {
         super("api/auth/");
     }
-    login(Correo, password) {
-        const creds = { Correo: correo, Password: password };
-        return this.request('POST', "login", creds);
+
+    login(correo, password) {
+        const creds = { correo: correo, Password: password };
+        return this.request('POST', 'login', creds); // ya maneja JSON
     }
 }
