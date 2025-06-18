@@ -8,20 +8,36 @@ namespace Proyecto_Donacion.Models
 {
     public class Donacion
     {
-        // Propiedades que reflejan las columnas de la tabla Donacion
         public int ID_donaciones { get; set; }
         public decimal Monto { get; set; }
         public DateTime Fecha { get; set; }
-        public int ID_beneficiario { get; set; }
+        public int ID_BENEFICIARIOS { get; set; }
+        public int UsuarioID { get; set; }
 
-        // Constructor vacío
         public Donacion() { }
 
-        // ===================== MÉTODOS CRUD =====================
+        /// <summary>Obtiene el ID del donante desde el UsuarioID.</summary>
+        private static int ObtenerIdDonante(int usuarioId)
+        {
+            string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                SqlCommand cmd = new SqlCommand("SELECT ID_DONANTES FROM DONANTES WHERE UsuarioID = @UsuarioID", conn);
+                cmd.Parameters.AddWithValue("@UsuarioID", usuarioId);
+
+                conn.Open();
+                object result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : -1;
+            }
+        }
 
         /// <summary>Crea una nueva donación en la base de datos.</summary>
-        public static int CrearDonacion(decimal Monto, DateTime Fecha, int ID_Beneficiario)
+        public static int CrearDonacion(decimal Monto, DateTime Fecha, int UsuarioID)
         {
+            int idDonante = ObtenerIdDonante(UsuarioID);
+            if (idDonante == -1)
+                throw new Exception("No se encontró un donante vinculado a este usuario.");
+
             string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -30,14 +46,39 @@ namespace Proyecto_Donacion.Models
 
                 cmd.Parameters.AddWithValue("@MONTO", Monto);
                 cmd.Parameters.AddWithValue("@FECHA", Fecha);
-                cmd.Parameters.AddWithValue("@ID_BENEFICIARIO", ID_Beneficiario);
+                cmd.Parameters.AddWithValue("@ID_DONANTES", idDonante);
 
                 conn.Open();
                 object result = cmd.ExecuteScalar();
                 return result != null ? Convert.ToInt32(result) : -1;
             }
         }
+        public static List<Donacion> ObtenerTodos()
+        {
+            List<Donacion> lista = new List<Donacion>();
+            string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_ObtenerTodasLasDonaciones", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                conn.Open();
 
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Donacion dona = new Donacion
+                    {
+                        ID_donaciones = (int)reader["ID_DONACIONES"],
+                        Monto = (decimal)reader["MONTO"],
+                        Fecha = (DateTime)reader["FECHA"],
+                        UsuarioID = ObtenerUsuarioIDDesdeDonanteID((int)reader["ID_DONANTES"])
+                    };
+                    lista.Add(dona);
+                }
+                reader.Close();
+            }
+            return lista;
+        }
         /// <summary>Obtiene una donación por su ID.</summary>
         public static Donacion ObtenerPorID(int ID_Donaciones)
         {
@@ -58,7 +99,8 @@ namespace Proyecto_Donacion.Models
                         ID_donaciones = (int)reader["ID_DONACIONES"],
                         Monto = (decimal)reader["MONTO"],
                         Fecha = (DateTime)reader["FECHA"],
-                        ID_beneficiario = (int)reader["ID_BENEFICIARIO"]
+                        ID_BENEFICIARIOS = (int)reader["ID_BENEFICIARIOS"],
+                        UsuarioID = ObtenerUsuarioIDDesdeDonanteID((int)reader["ID_DONANTES"]) // ← Opcional
                     };
                 }
                 reader.Close();
@@ -66,36 +108,23 @@ namespace Proyecto_Donacion.Models
             return dona;
         }
 
-        /// <summary>Obtiene todas las donaciones.</summary>
-        public static List<Donacion> ObtenerTodos()
+        /// <summary>Este método es opcional si necesitás mostrar UsuarioID al recuperar donación.</summary>
+        private static int ObtenerUsuarioIDDesdeDonanteID(int idDonante)
         {
-            List<Donacion> lista = new List<Donacion>();
             string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))
             {
-                SqlCommand cmd = new SqlCommand("sp_ObtenerTodasLasDonaciones", conn);
-                cmd.CommandType = CommandType.StoredProcedure;
+                SqlCommand cmd = new SqlCommand("SELECT UsuarioID FROM DONANTES WHERE ID_DONANTES = @ID", conn);
+                cmd.Parameters.AddWithValue("@ID", idDonante);
                 conn.Open();
 
-                SqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    Donacion dona = new Donacion
-                    {
-                        ID_donaciones = (int)reader["ID_DONACIONES"],
-                        Monto = (decimal)reader["MONTO"],
-                        Fecha = (DateTime)reader["FECHA"],
-                        ID_beneficiario = (int)reader["ID_BENEFICIARIO"]
-                    };
-                    lista.Add(dona);
-                }
-                reader.Close();
+                object result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : -1;
             }
-            return lista;
         }
 
         /// <summary>Actualiza una donación existente.</summary>
-        public static bool ActualizarDonacion(int ID_donacion, decimal monto, DateTime fecha, int ID_beneficiario)
+        public static bool ActualizarDonacion(int ID_donacion, decimal monto, DateTime fecha, int ID_beneficiarios)
         {
             string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))
@@ -106,7 +135,7 @@ namespace Proyecto_Donacion.Models
                 cmd.Parameters.AddWithValue("@ID_DONACIONES", ID_donacion);
                 cmd.Parameters.AddWithValue("@MONTO", monto);
                 cmd.Parameters.AddWithValue("@FECHA", fecha);
-                cmd.Parameters.AddWithValue("@ID_BENEFICIARIO", ID_beneficiario);
+                cmd.Parameters.AddWithValue("@ID_BENEFICIARIOS", ID_beneficiarios);
 
                 conn.Open();
                 int rows = cmd.ExecuteNonQuery();

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Inicio</title>
+    <title>Gestión de Beneficiarios</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -26,30 +26,25 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                 <li class="nav-item"><a class="nav-link" href="donacion.html">Donación</a></li>
-                <!-- Links ocultos por defecto -->
-                <li class="nav-item"><a class="nav-link" href="beneficiarios.html" id="linkBeneficiarios" style="display:none;">Beneficiarios</a></li>
-                <li class="nav-item"><a class="nav-link" href="fondos.html" id="linkFondos" style="display:none;">Fondos</a></li>
+                <li class="nav-item"><a class="nav-link" href="beneficiarios.html" id="linkBeneficiarios" style="display:none">Beneficiarios</a></li>
+                <li class="nav-item"><a class="nav-link" href="fondos.html" id="linkFondos" style="display:none">Fondos</a></li>
             </ul>
             <button id="btnLogout" class="btn btn-outline-light">Cerrar Sesión</button>
         </div>
     </nav>
+
     <div class="container mt-4">
         <h2>Gestión de Beneficiarios</h2>
         <button id="btnNuevoBeneficiario" class="btn btn-success mb-3">+ Agregar Beneficiario</button>
         <table id="tablaBeneficiarios" class="display table table-striped table-bordered">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
-                </tr>
+                <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acciones</th></tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal para crear/editar beneficiario -->
     <div class="modal" id="modalBeneficiario" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -78,60 +73,55 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts necesarios -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="js/apiClient.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="js/apiClient.js"></script>
 
     <script>
-        // Mostrar links según rol
-        const rol = localStorage.getItem('userRol') === 'true';
-        if (rol) {
-            document.getElementById('linkFondos').style.display = 'block';
-            document.getElementById('linkBeneficiarios').style.display = 'block';
-        }
-
-        const apiBeneficiarios = new BeneficiarioAPI();
-        let tabla;
-
-        function cargarBeneficiariosTabla() {
-            apiBeneficiarios.obtenerTodos().then(beneficiarios => {
-                const tbody = $('#tablaBeneficiarios tbody');
-                tbody.empty();
-                beneficiarios.forEach(ben => {
-                    const fila = $('<tr>');
-                    fila.append(`<td>${ben.ID_Beneficiarios}</td>`);
-                    fila.append(`<td>${ben.Nombre}</td>`);
-                    fila.append(`<td>${ben.Email}</td>`);
-                    fila.append(`
-                        <td>
-                            <button class="btn btn-sm btn-info btnEditar" data-id="${ben.ID_Beneficiarios}">Editar</button>
-                            <button class="btn btn-sm btn-danger btnEliminar" data-id="${ben.ID_Beneficiarios}">Eliminar</button>
-                        </td>
-                    `);
-                    tbody.append(fila);
-                });
-
-                if ($.fn.DataTable.isDataTable('#tablaBeneficiarios')) {
-                    tabla.destroy();
-                }
-                tabla = $('#tablaBeneficiarios').DataTable();
-            });
-        }
-
         $(function () {
-            if (!localStorage.getItem('userData')) {
-                window.location.href = 'login.html';
-                return;
+            // Redirección si no hay usuario autenticado
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData) return window.location.href = 'login.html';
+
+            // Mostrar links por rol
+            const rol = localStorage.getItem('userRol') === 'true';
+            if (rol) {
+                $('#linkFondos, #linkBeneficiarios').show();
             }
 
-            $('#btnLogout').click(() => {
+            $('#nombreUsuario').text(localStorage.getItem('userName') || 'Usuario');
+
+            $('#btnLogout').on('click', () => {
                 localStorage.clear();
                 window.location.href = 'login.html';
             });
+
+            const apiBeneficiarios = new BeneficiarioAPI();
+            let tabla;
+
+            function cargarBeneficiariosTabla() {
+                apiBeneficiarios.obtenerTodos().then(beneficiarios => {
+                    const tbody = $('#tablaBeneficiarios tbody').empty();
+                    beneficiarios.forEach(ben => {
+                        tbody.append(`
+                  <tr>
+                    <td>${ben.ID_BENEFICIARIOS}</td>
+                    <td>${ben.Nombre}</td>
+                    <td>${ben.Email}</td>
+                    <td>
+                      <button class="btn btn-info btn-sm btnEditar" data-id="${ben.ID_BENEFICIARIOS}">Editar</button>
+                      <button class="btn btn-danger btn-sm btnEliminar" data-id="${ben.ID_BENEFICIARIOS}">Eliminar</button>
+                    </td>
+                  </tr>`);
+                    });
+                    if ($.fn.DataTable.isDataTable('#tablaBeneficiarios')) tabla.destroy();
+                    tabla = $('#tablaBeneficiarios').DataTable();
+                });
+            }
 
             cargarBeneficiariosTabla();
 
@@ -143,9 +133,8 @@
             });
 
             $('#tablaBeneficiarios').on('click', '.btnEditar', function () {
-                const id = $(this).data('id');
-                apiBeneficiarios.obtenerPorId(id).then(ben => {
-                    $('#ID_Beneficiarios').val(ben.ID_Beneficiarios);
+                apiBeneficiarios.obtenerPorId($(this).data('id')).then(ben => {
+                    $('#ID_Beneficiarios').val(ben.ID_BENEFICIARIOS);
                     $('#Nombre').val(ben.Nombre);
                     $('#Email').val(ben.Email);
                     $('#modalBeneficiario .modal-title').text('Editar Beneficiario');
@@ -156,20 +145,17 @@
             $('#tablaBeneficiarios').on('click', '.btnEliminar', function () {
                 const id = $(this).data('id');
                 Swal.fire({
-                    title: '¿Está seguro?',
-                    text: 'Eliminar beneficiario ID ' + id,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
+                    title: `¿Eliminar beneficiario ID ${id}?`,
+                    icon: 'warning', showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar'
                 }).then(result => {
                     if (result.isConfirmed) {
-                        apiBeneficiarios.eliminar(id).then(() => {
-                            Swal.fire('Beneficiario eliminado', '', 'success');
-                            cargarBeneficiariosTabla();
-                        }).catch(err => {
-                            Swal.fire('Error', 'No se pudo eliminar: ' + err, 'error');
-                        });
+                        apiBeneficiarios.eliminar(id)
+                            .then(() => {
+                                Swal.fire('Eliminado', '', 'success');
+                                cargarBeneficiariosTabla();
+                            })
+                            .catch(err => Swal.fire('Error', err, 'error'));
                     }
                 });
             });
@@ -177,28 +163,34 @@
             $('#formBeneficiario').on('submit', function (e) {
                 e.preventDefault();
                 const id = $('#ID_Beneficiarios').val();
+
                 const data = {
                     Nombre: $('#Nombre').val(),
-                    Email: $('#Email').val()
+                    Email: $('#Email').val(),
+                    UsuarioID: userData.UsuarioID  // ← ¡así se envía correctamente!
                 };
 
+                if (!data.UsuarioID) {
+                    return Swal.fire('Error', 'No se detectó el UsuarioID.', 'error');
+                }
+
                 if (id === '') {
-                    apiBeneficiarios.crear(data).then(() => {
-                        $('#modalBeneficiario').modal('hide');
-                        Swal.fire('¡Beneficiario creado!', '', 'success');
-                        cargarBeneficiariosTabla();
-                    }).catch(err => {
-                        Swal.fire('Error', 'No se pudo guardar: ' + err, 'error');
-                    });
+                    apiBeneficiarios.crear(data)
+                        .then(() => {
+                            $('#modalBeneficiario').modal('hide');
+                            Swal.fire('¡Beneficiario creado!', '', 'success');
+                            cargarBeneficiariosTabla();
+                        })
+                        .catch(err => Swal.fire('Error', err, 'error'));
                 } else {
-                    data.ID_Beneficiarios = parseInt(id);
-                    apiBeneficiarios.actualizar(id, data).then(() => {
-                        $('#modalBeneficiario').modal('hide');
-                        Swal.fire('Beneficiario actualizado', '', 'success');
-                        cargarBeneficiariosTabla();
-                    }).catch(err => {
-                        Swal.fire('Error', 'No se pudo actualizar: ' + err, 'error');
-                    });
+                    data.ID_BENEFICIARIOS = parseInt(id);
+                    apiBeneficiarios.actualizar(id, data)
+                        .then(() => {
+                            $('#modalBeneficiario').modal('hide');
+                            Swal.fire('Actualizado', '', 'success');
+                            cargarBeneficiariosTabla();
+                        })
+                        .catch(err => Swal.fire('Error', err, 'error'));
                 }
             });
         });

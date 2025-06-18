@@ -8,7 +8,7 @@ using Proyecto_Donacion.Models;
 
 namespace Proyecto_Donacion.Controllers
 {
-    [RoutePrefix("api/Donacione")]
+    [RoutePrefix("api/Donaciones")]
 
     public class DonacionController : ApiController
     {
@@ -42,7 +42,7 @@ namespace Proyecto_Donacion.Controllers
                 return BadRequest("Datos de donacion inválidos.");
             try
             {
-                int newId = Donacion.CrearDonacion(nuevo.Monto, nuevo.Fecha, nuevo.ID_beneficiario);
+                int newId = Donacion.CrearDonacion(nuevo.Monto, nuevo.Fecha, nuevo.UsuarioID);
                 // Devolver el objeto creado con su nuevo ID
                 nuevo.ID_donaciones = newId;
                 return Ok(nuevo);
@@ -62,7 +62,7 @@ namespace Proyecto_Donacion.Controllers
             if (id != editado.ID_donaciones)
                 return BadRequest("El ID de la URL no coincide con el del cuerpo.");
 
-            bool ok = Donacion.ActualizarDonacion(id, editado.Monto, editado.Fecha, editado.ID_beneficiario);
+            bool ok = Donacion.ActualizarDonacion(id, editado.Monto, editado.Fecha, editado.ID_BENEFICIARIOS);
             if (ok)
                 return Ok("Donacion actualizada correctamente.");
             else

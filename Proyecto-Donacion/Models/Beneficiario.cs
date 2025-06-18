@@ -9,9 +9,10 @@ namespace Proyecto_Donacion.Models
     public class Beneficiario
     {
         // Propiedades
-        public int ID_Beneficiario { get; set; }
+        public int ID_BENEFICIARIOS { get; set; }
         public string Nombre { get; set; }
         public string Email { get; set; }
+        public int UsuarioID { get; set; }
 
         public Beneficiario() { }
 
@@ -25,6 +26,7 @@ namespace Proyecto_Donacion.Models
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@Nombre", this.Nombre);
                 cmd.Parameters.AddWithValue("@Email", this.Email);
+                cmd.Parameters.AddWithValue("@UsuarioID", this.UsuarioID);
 
                 conn.Open();
                 object result = cmd.ExecuteScalar();
@@ -48,7 +50,7 @@ namespace Proyecto_Donacion.Models
                 {
                     Beneficiario b = new Beneficiario
                     {
-                        ID_Beneficiario = Convert.ToInt32(reader["ID_Beneficiario"]),
+                        ID_BENEFICIARIOS = Convert.ToInt32(reader["ID_BENEFICIARIOS"]),
                         Nombre = reader["Nombre"].ToString(),
                         Email = reader["Email"].ToString()
                     };
@@ -68,7 +70,7 @@ namespace Proyecto_Donacion.Models
             {
                 SqlCommand cmd = new SqlCommand("sp_ObtenerBeneficiarioPorID", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ID_Beneficiario", id);
+                cmd.Parameters.AddWithValue("@ID_BENEFICIARIOS", id);
 
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -76,7 +78,7 @@ namespace Proyecto_Donacion.Models
                 {
                     bene = new Beneficiario
                     {
-                        ID_Beneficiario = Convert.ToInt32(reader["ID_Beneficiario"]),
+                        ID_BENEFICIARIOS = Convert.ToInt32(reader["ID_BENEFICIARIOS"]),
                         Nombre = reader["Nombre"].ToString(),
                         Email = reader["Email"].ToString()
                     };
@@ -94,7 +96,7 @@ namespace Proyecto_Donacion.Models
             {
                 SqlCommand cmd = new SqlCommand("sp_ActualizarBeneficiario", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ID_Beneficiario", this.ID_Beneficiario);
+                cmd.Parameters.AddWithValue("@ID_BENEFICIARIOS", this.ID_BENEFICIARIOS);
                 cmd.Parameters.AddWithValue("@Nombre", this.Nombre);
                 cmd.Parameters.AddWithValue("@Email", this.Email);
 
@@ -112,7 +114,7 @@ namespace Proyecto_Donacion.Models
             {
                 SqlCommand cmd = new SqlCommand("sp_EliminarBeneficiario", conn);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@ID_Beneficiario", this.ID_Beneficiario);
+                cmd.Parameters.AddWithValue("@ID_BENEFICIARIOS", this.ID_BENEFICIARIOS);
 
                 conn.Open();
                 int rows = cmd.ExecuteNonQuery();

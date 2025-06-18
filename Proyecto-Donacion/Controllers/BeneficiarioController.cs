@@ -40,9 +40,10 @@ namespace Proyecto_Donacion.Controllers
                 Beneficiario bene = new Beneficiario();
                 bene.Nombre = nuevo.Nombre;
                 bene.Email = nuevo.Email;
+                bene.UsuarioID = nuevo.UsuarioID;
                 int newId = bene.CrearBeneficiario();
                 // Devolver el objeto creado con su nuevo ID
-                nuevo.ID_Beneficiario = newId;
+                nuevo.ID_BENEFICIARIOS = newId;
                 return Ok(nuevo);
             }
             catch (System.Exception ex)
@@ -57,10 +58,10 @@ namespace Proyecto_Donacion.Controllers
         public IHttpActionResult Update(int id, [FromBody] Beneficiario editado)
         {
             if (editado == null) return BadRequest();
-            if (id != editado.ID_Beneficiario)
+            if (id != editado.ID_BENEFICIARIOS)
                 return BadRequest("El ID de la URL no coincide con el del cuerpo.");
             Beneficiario bene = new Beneficiario();
-            bene.ID_Beneficiario = editado.ID_Beneficiario; // <--- ASIGNA EL ID AQUÍ
+            bene.ID_BENEFICIARIOS = editado.ID_BENEFICIARIOS; // <--- ASIGNA EL ID AQUÍ
             bene.Nombre = editado.Nombre;
             bene.Email = editado.Email;
 
