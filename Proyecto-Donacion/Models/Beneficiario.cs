@@ -105,7 +105,7 @@ namespace Proyecto_Donacion.Models
         }
 
         // === ELIMINAR ===
-        public bool EliminarBeneficiario()
+        public bool EliminarBeneficiario(int id)
         {
             string connString = ConfigurationManager.ConnectionStrings["DonacionBD"].ConnectionString;
             using (SqlConnection conn = new SqlConnection(connString))

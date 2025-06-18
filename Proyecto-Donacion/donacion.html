@@ -26,8 +26,8 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item"><a class="nav-link" href="index.html">Inicio</a></li>
                 <li class="nav-item"><a class="nav-link" href="donacion.html">Donacion</a></li>
-                <li class="nav-item"><a class="nav-link" href="beneficiarios.html">Beneficiarios</a></li>
-                <!-- Link oculto por defecto -->
+                <!-- Links ocultos por defecto -->
+                <li class="nav-item"><a class="nav-link" href="beneficiarios.html" id="linkBeneficiarios" style="display:none;">Beneficiarios</a></li>
                 <li class="nav-item"><a class="nav-link" href="fondos.html" id="linkFondos" style="display:none;">Fondos</a></li>
             </ul>
             <button id="btnLogout" class="btn btn-outline-light">Cerrar Sesión</button>
@@ -99,6 +99,9 @@
         if (rol) {
 
             document.getElementById('linkFondos').style.display = 'block';
+            document.getElementById('linkBeneficiarios').style.display = 'block';
+        
+
 
         }
 
